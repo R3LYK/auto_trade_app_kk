@@ -1,10 +1,10 @@
 import sqlite3, config
+import psycopg2
 import alpaca_trade_api as tradeapi
 
-connection = sqlite3.connect(config.DB_FILE)
-connection.row_factory = sqlite3.Row
+conn = psycopg2.connect(database=config.db_name, user=config.user_name, password=config.db_pass, host=config.db_host, port=5432)
 
-cursor = connection.cursor()
+cursor = conn.cursor()
 cursor.execute("""
     SELECT symbol, name FROM stock
 """)
@@ -20,4 +20,4 @@ for asset in assets:
     except Exception as e:
         print(asset.symbol)
         print(e)
-connection.commit()
+conn.commit() 
