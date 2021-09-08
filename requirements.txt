@@ -1,0 +1,7 @@
+psycopg2
+requests
+fastapi
+sqlalchemy
+pandas
+asyncpg
+aiohttp
