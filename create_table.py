@@ -2,7 +2,7 @@ import psycopg2, config
 import psycopg2.extras
 from psycopg2 import extensions
 
-
+##CURRENTLY POINTED AT NON-EXISTING DATABASE INSTANCE (I deleted the old one)
 
 def create_tables():
     """ create tables in database"""
@@ -16,7 +16,7 @@ def create_tables():
         """,
         """CREATE TABLE IF NOT EXISTS stock_price ( 
         stock_id INTEGER,
-        date_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+        date_time VARCHAR NOT NULL,
         open NUMERIC NOT NULL, 
         high NUMERIC NOT NULL, 
         low NUMERIC NOT NULL, 
@@ -42,11 +42,11 @@ def create_tables():
         """)
 
 
-    connection = psycopg2.connect(host=config.DB_LOCAL_HOST, 
-                                database=config.DB_LOCAL_NAME, 
-                                user=config.DB_LOCAL_USER, 
-                                password=config.DB_LOCAL_PASSWORD)
-
+    connection = psycopg2.connect(database=config.DB_NAME, 
+                                host=config.DB_HOST, 
+                                user=config.DB_USER, 
+                                password=config.DB_PASS, 
+                                port=config.DB_PORT)
     try:
         cursor = connection.cursor()
 

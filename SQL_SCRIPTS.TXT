@@ -1,0 +1,10 @@
+select count(*) as num_mentions, stock_id
+from ticker_match
+group by stock_id;
+
+####
+
+select count(*) as num_mentions, stock_id, symbol
+from ticker_match join stock on stock.id = ticker_match.stock_id
+group by stock_id, symbol
+order by num_mentions DESC;

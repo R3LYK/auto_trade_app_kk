@@ -5,10 +5,11 @@ import psycopg2.extras
 
 
 try:
-    connection = psycopg2.connect(host=config.DB_LOCAL_HOST, 
-                                database=config.DB_LOCAL_NAME, 
-                                user=config.DB_LOCAL_USER, 
-                                password=config.DB_LOCAL_PASSWORD)
+    connection = psycopg2.connect(database=config.DB_NAME, 
+                                host=config.DB_HOST, 
+                                user=config.DB_USER, 
+                                password=config.DB_PASS, 
+                                port=config.DB_PORT)
 
     print("Connected to database successfully.")
     

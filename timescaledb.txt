@@ -1,0 +1,6 @@
+username
+tsdbadmin
+service name
+db-19949
+password
+y20vgz2b93idlkn4

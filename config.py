@@ -4,18 +4,18 @@ import psycopg2
 
 API_KEY = ('PKFX5PGWS1QSUG9GT8VP')
 API_URL = ('https://paper-api.alpaca.markets')
-SECRET_KEY = ('Ojkf8iL3T4j2tOKGHfObZqVWbpUZ8W6Quog82Cpe')
+SECRET_KEY = ('')
 
 # DATABASE
 
-DB_HOST = ("ls-0ac799628b5dad6ae5fff0c755e9025170d01b85.clyjtmyhlt3z.us-east-1.rds.amazonaws.com")
+DB_HOST = ("ls-7e081ac832cc6511590c5ca99e1d153952f25172.clyjtmyhlt3z.us-east-1.rds.amazonaws.com")
 DB_NAME = ("postgres")
 DB_USER = ("dbmasteruser")
-DB_PASS = ("4;ILrcF98|(yTN(;[V=Kj}ed.wMHq4Mp")
+DB_PASS = ("ofs%Jb#BHg85_*x]aWfp+V?G&f:Gm0Xd")
 
 # LOCAL DATABASE
 
 DB_LOCAL_HOST = ("localhost")
 DB_LOCAL_USER = ("kyler")
-DB_LOCAL_PASSWORD = ("0706James0706")
+DB_LOCAL_PASSWORD = ("")
 DB_LOCAL_NAME = ("test_db")

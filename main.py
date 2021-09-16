@@ -4,6 +4,7 @@ from psycopg2 import extensions
 from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
+import datetime as datetime
 from datetime import date
 
 
@@ -18,12 +19,11 @@ def index(request: Request):
                                 database=config.DB_LOCAL_NAME, 
                                 user=config.DB_LOCAL_USER, 
                                 password=config.DB_LOCAL_PASSWORD)
+
     connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
     cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-# The query below (29,39) works in pgadmin. 
-# I think either the subquery is incorrect or pythons date.today().isoformat
-# is creating issues due to the format I imported date_time as.
+# NOW I THINK THERE IS AN ISSUE WITH THE TIME FORMATS WE'RE CALLING VS TIMVE FORMATS OF DATABASE
 
     if stock_filter == 'new_closing_highs':
         cursor.execute("""SELECT * FROM 
@@ -36,7 +36,7 @@ def index(request: Request):
                     )
                     AS MyDerivedTable
                     WHERE date_time = %s
-                    """, (date.today().isoformat(),)) #calling date/time dynamically using imported datetime
+                    """), (date.today().isoformat(),) #calling date/time dynamically using imported datetime
     else:
         cursor.execute("""
             SELECT id, symbol, name FROM stock ORDER BY symbol
@@ -47,28 +47,26 @@ def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "stocks": rows})
 
 @app.get("/stock/{symbol}")
-def stock_detail(request: Request, symbol):
+def stock_detail(request: Request, symbol): #accepts a request and symbol
     connection = psycopg2.connect(host=config.DB_LOCAL_HOST, 
                             database=config.DB_LOCAL_NAME, 
                             user=config.DB_LOCAL_USER, 
                             password=config.DB_LOCAL_PASSWORD)
+
     connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
     cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    cursor.execute("""
-        SELECT * FROM strategy
-    """)
+    cursor.execute("""SELECT * FROM strategy
+                """)
     strategies = cursor.fetchall()
     
-    cursor.execute("""
-        SELECT id, symbol, name FROM stock WHERE symbol = %s
-    """, (symbol,))
+    cursor.execute("""SELECT id, symbol, name FROM stock WHERE symbol = %s
+                """, (symbol,))
 
     row = cursor.fetchone()
     
-    cursor.execute("""
-    SELECT * FROM stock_price WHERE stock_id = %s ORDER BY date_time DESC
-    """, (row['id'],))
+    cursor.execute("""SELECT * FROM stock_price WHERE stock_id = %s ORDER BY date_time DESC 
+                """, (row['id'],))
 
     prices = cursor.fetchall()
 
@@ -80,6 +78,7 @@ def apply_strategy(strategy_id: int=Form(...), stock_id: int = Form(...)):
                             database=config.DB_LOCAL_NAME, 
                             user=config.DB_LOCAL_USER, 
                             password=config.DB_LOCAL_PASSWORD)
+
     connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
     cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
@@ -97,6 +96,7 @@ def strategy(request: Request, strategy_id):
                             database=config.DB_LOCAL_NAME, 
                             user=config.DB_LOCAL_USER, 
                             password=config.DB_LOCAL_PASSWORD)
+
     connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
     cursor = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
 

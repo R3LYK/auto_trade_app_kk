@@ -13,10 +13,11 @@ def drop_tables():
         """DROP TABLE IF EXISTS stock CASCADE""",
         )
 
-    connection = psycopg2.connect(host=config.DB_LOCAL_HOST, 
-                                database=config.DB_LOCAL_NAME, 
-                                user=config.DB_LOCAL_USER, 
-                                password=config.DB_LOCAL_PASSWORD)
+    connection = psycopg2.connect(database=config.DB_NAME, 
+                            host=config.DB_HOST, 
+                            user=config.DB_USER, 
+                            password=config.DB_PASS, 
+                            port=config.DB_PORT)
 
     try:
         cursor = connection.cursor()
