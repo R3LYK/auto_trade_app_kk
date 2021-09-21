@@ -1,3 +1,6 @@
+# drops all tables AND DATA
+#CASCADE over-rides any checks for related/dependent data
+
 import psycopg2, config
 import psycopg2.extras
 from psycopg2 import extensions
@@ -13,11 +16,7 @@ def drop_tables():
         """DROP TABLE IF EXISTS stock CASCADE""",
         )
 
-    connection = psycopg2.connect(database=config.DB_NAME, 
-                            host=config.DB_HOST, 
-                            user=config.DB_USER, 
-                            password=config.DB_PASS, 
-                            port=config.DB_PORT)
+    connection = psycopg2.connect(config.connection)
 
     try:
         cursor = connection.cursor()

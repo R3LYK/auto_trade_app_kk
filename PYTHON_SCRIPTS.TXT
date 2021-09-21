@@ -1,8 +1,0 @@
-    ############# AWS connection ###################
-    
-    connection for aws instance
-    
-    connection = psycopg2.connect(dbname=config.DB_NAME, 
-                                user=config.DB_USER, 
-                                password=config.DB_PASS, 
-                                host=config.DB_HOST)

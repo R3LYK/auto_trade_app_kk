@@ -1,3 +1,5 @@
+#This creates all the tables at once. Probably not the best practice
+
 import psycopg2, config
 import psycopg2.extras
 from psycopg2 import extensions
@@ -15,8 +17,8 @@ def create_tables():
         )
         """,
         """CREATE TABLE IF NOT EXISTS stock_price ( 
-        stock_id INTEGER,
-        date_time VARCHAR NOT NULL,
+        stock_id INTEGER NOT NULL,
+        date_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
         open NUMERIC NOT NULL, 
         high NUMERIC NOT NULL, 
         low NUMERIC NOT NULL, 
@@ -39,14 +41,13 @@ def create_tables():
         )
         """,
         """CREATE INDEX ON stock_price (stock_id, date_time DESC)
-        """)
+        """,
+        """SELECT create_hypertable('stock_price', 'date_time')
+        """
+        )
 
-
-    connection = psycopg2.connect(database=config.DB_NAME, 
-                                host=config.DB_HOST, 
-                                user=config.DB_USER, 
-                                password=config.DB_PASS, 
-                                port=config.DB_PORT)
+# right now the print "tables have been..." is pointless. 
+    connection = psycopg2.connect(config.connection)
     try:
         cursor = connection.cursor()
 

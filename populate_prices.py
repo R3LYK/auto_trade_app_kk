@@ -2,15 +2,17 @@ import psycopg2, asyncpg, config
 import alpaca_trade_api as tradeapi
 from psycopg2 import extensions
 import psycopg2.extras
+import time
+import logging
 
-connection = psycopg2.connect(database=config.DB_NAME, 
-                            host=config.DB_HOST, 
-                            user=config.DB_USER, 
-                            password=config.DB_PASS, 
-                            port=config.DB_PORT)
+connection = psycopg2.connect(config.connection)
 
-#from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-#connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+# commented-out code below will auto-commit every insert. Good for debugging purposes
+# bad practice other-wise. Google commit and rollback for more information
+
+# I un-commented the 2 lines below in populate_prices.py
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 
 cursor = connection.cursor(cursor_factory = psycopg2.extras.DictCursor)
 cursor.execute("""
@@ -19,7 +21,7 @@ cursor.execute("""
 
 rows = cursor.fetchall()
 
-symbols = []
+symbols = [row['symbol'] for row in rows]
 
 stock_dict = {}
 for row in rows:
@@ -29,19 +31,28 @@ for row in rows:
 
 api = tradeapi.REST(config.API_KEY, config.SECRET_KEY, base_url=config.API_URL)
 
+# starting timer for debugging purposes
+start = time.time()
 # looping through symbols 200 at a time(API-limit)
+
 chunk_size = 200
 for i in range(0, len(symbols), chunk_size):
     symbol_chunk = symbols[i:i+chunk_size] # moves to next iteration of chunk i.e. 1-200,201-400,401-600...
 
-    barsets = api.get_barset(symbol_chunk, 'minute')
+    barsets = api.get_barset(symbol_chunk, 'day')
+
     for symbol in barsets:
         print(f"processing symbol {symbol}")
-        for bar in barsets[symbol]:
-            stock_id = stock_dict[symbol]
-            cursor.execute("""
-                INSERT INTO stock_price (stock_id, date_time, open, high, low, close, volume)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (stock_id, bar.t, bar.o, bar.h, bar.l, bar.c, bar.v))
+    for bar in barsets[symbol]:
+        stock_id = stock_dict[symbol]
+        cursor.execute("""INSERT INTO stock_price
+                    (stock_id, date_time, open, high, low, close, volume)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """, (stock_id, bar.t.date(), bar.o, bar.h, bar.l, bar.c, bar.v))
+    
+    # ends timer for debugging purposes
+    end = time.time()
+    print(f"Process ran for {end - start}.") # prints out time from start to end.
+
 
 connection.commit()
