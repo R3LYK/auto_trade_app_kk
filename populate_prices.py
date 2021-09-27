@@ -10,7 +10,6 @@ connection = psycopg2.connect(config.connection)
 # commented-out code below will auto-commit every insert. Good for debugging purposes
 # bad practice other-wise. Google commit and rollback for more information
 
-# I un-commented the 2 lines below in populate_prices.py
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 
@@ -47,7 +46,8 @@ for i in range(0, len(symbols), chunk_size):
         stock_id = stock_dict[symbol]
         cursor.execute("""INSERT INTO stock_price
                     (stock_id, date_time, open, high, low, close, volume)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s) 
+                    ON CONFLICT ON CONSTRAINT fk_stock DO NOTHING
                     """, (stock_id, bar.t.date(), bar.o, bar.h, bar.l, bar.c, bar.v))
     
     # ends timer for debugging purposes

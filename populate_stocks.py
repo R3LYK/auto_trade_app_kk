@@ -28,7 +28,7 @@ assets = api.list_assets()
 
 # playing around with testing/read-out's
 # should count the number of stocks. Time starts time.
-num_stocks = len(symbols)
+num_stocks = len(symbols) #not working
 start = time.time()
 
 for asset in assets:
